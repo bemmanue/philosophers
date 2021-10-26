@@ -3,6 +3,8 @@ NAME			=	philo
 
 SRCS			=	philo.c	\
 					utils.c	\
+					forks.c	\
+					eat.c	\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)
