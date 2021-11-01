@@ -5,6 +5,7 @@ SRCS			=	philo.c	\
 					utils.c	\
 					forks.c	\
 					eat.c	\
+					print.c	\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)
@@ -18,7 +19,7 @@ CFLAGS			=	-Wall -Wextra -Werror -MMD
 all:				$(NAME)
 
 .c.o:
-					$(CC) $(CFLAGS) -Iincludes/ -c $< -o $@
+					$(CC) $(CFLAGS) -I. -c $< -o $@
 
 $(NAME):			$(OBJS)
 					$(CC) $(CFLAGS) $(OBJS) -o $(NAME)

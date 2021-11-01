@@ -15,16 +15,21 @@
 void	take_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
-	printf("philosopher %d has taken a fork\n", philo->position + 1);
+	print_status(philo, " has taken a fork\n");
+
 	pthread_mutex_lock(philo->left_fork);
-	printf("philosopher %d has taken a fork\n", philo->position + 1);
+	print_status(philo, " has taken a fork\n");
+//	sleep(1);
 }
 
 void	put_forks(t_philo *philo)
 {
+	philo->is_eating = 0;
+	print_status(philo, " is sleeping\n");
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
-	printf("philosopher %d is sleeping\n", philo->position + 1);
 	usleep(philo->data->time_to_sleep);
-	printf("philosopher %d is thinking\n", philo->position + 1);
+	print_status(philo, " is thinking\n");
 }
+
+

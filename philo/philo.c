@@ -12,11 +12,35 @@
 
 #include "philo.h"
 
-void	*routine(void *struct_philo)
+void	*monitor(void *struct_philo)
 {
 	t_philo			*philo;
+	struct timeval	get_time;
 
 	philo = struct_philo;
+	while (1)
+	{
+		pthread_mutex_lock(&philo->data->monitor);
+		gettimeofday(&get_time, NULL);
+		if (!philo->is_eating && get_time.tv_usec > philo->time_limit)
+		{
+			printf("philo->time_limit = %lld\n", philo->time_limit);
+			printf("time = %d\n", get_time.tv_usec);
+			print_status(philo, " is dead\n");
+			exit(0);
+		}
+		pthread_mutex_unlock(&philo->data->monitor);
+	}
+	return (NULL);
+}
+
+void	*routine(void *struct_philo)
+{
+	t_philo		*philo;
+//	pthread_t	pthread;
+
+	philo = struct_philo;
+//	pthread_create(&pthread, NULL, &monitor, philo);
 	while (1)
 	{
 		take_forks(philo);
@@ -28,18 +52,25 @@ void	*routine(void *struct_philo)
 
 void	start_threads(t_data *data)
 {
-	pthread_t	pthread;
-	void		*philo;
+	pthread_t		pthread;
+	t_philo			*philo;
+	struct timeval	get_time;
 
 	int i = 0;
+	gettimeofday(&get_time, NULL);
+	data->start_time = get_time.tv_usec;
 	while (i < data->amount)
 	{
 		pthread = data->philos[i].thread;
 		philo = (void*)(&data->philos[i]);
 		pthread_create(&pthread, NULL, &routine, philo);
-//		pthread_detach(pthread);
-//		pthread_join(pthread, NULL);
+		philo->current_time = data->start_time;
+		philo->time_limit = get_time.tv_usec + data->time_to_die;
+		printf("philo->time_limit = %lld\n", philo->time_limit);
+		printf("time = %d\n", get_time.tv_usec);
+		pthread_detach(pthread);
 		i++;
+		usleep(200);
 	}
 }
 

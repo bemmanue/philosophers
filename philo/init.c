@@ -18,14 +18,10 @@ void	init_mutexes(t_data *data)
 
 	i = 0;
 	while (i < data->amount)
-		pthread_mutex_init(&data->fork[i++], NULL);
-	i = 0;
-	while (i < data->amount)
-	{
-		data->philos[i].left_fork = &data->fork[i];
-		data->philos[i].right_fork = &data->fork[(i + 1) % data->amount];
-		i++;
-	}
+
+		pthread_mutex_init(&data->forks[i++], NULL);
+	pthread_mutex_init(&data->monitor, NULL);
+	pthread_mutex_init(&data->write, NULL);
 }
 
 void	init_philos(t_data *data)
@@ -37,7 +33,11 @@ void	init_philos(t_data *data)
 	{
 		data->philos[i].position = i;
 		data->philos[i].is_eating = 0;
-		data->philos[i].is_sleeping = 0;
+		data->philos[i].start_time = 0;
+		data->philos[i].current_time = 0;
+		data->philos[i].time_limit = 0;
+		data->philos[i].left_fork = &data->forks[i];
+		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
 		data->philos[i].data = data;
 		i++;
 	}
@@ -54,8 +54,8 @@ void	init_data(t_data **data, int argc, char **argv)
 		(*data)->must_eat_count = ft_atoi(argv[5]);
 	else
 		(*data)->must_eat_count = 0;
-	(*data)->philos = malloc(sizeof(t_philo *) * (*data)->amount);
-	(*data)->fork = malloc(sizeof(*(*data)->fork) * (*data)->amount);
-	init_philos(*data);
+	(*data)->philos = malloc(sizeof(t_philo) * (*data)->amount);
+	(*data)->forks = malloc(sizeof(pthread_mutex_t) * (*data)->amount);
 	init_mutexes(*data);
+	init_philos(*data);
 }
