@@ -6,6 +6,7 @@ SRCS			=	philo.c	\
 					forks.c	\
 					eat.c	\
 					print.c	\
+					time.c	\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)

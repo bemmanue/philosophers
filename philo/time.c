@@ -1,25 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print.c                                            :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/29 13:37:30 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/10/29 13:37:32 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/01 15:04:34 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/01 15:04:37 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-//"\033[22;34mHello, world!\033[0m"
-
-void	print_status(t_philo *philo, char *status)
+long long	get_time(void)
 {
-	pthread_mutex_lock(&philo->data->write);
-	ft_putlong_fd(get_time() - philo->data->start_time, 1);
-	ft_putstr_fd("     ", 1);
-	ft_putnbr_fd(philo->position + 1, 1);
-	ft_putstr_fd(status, 1);
-	pthread_mutex_unlock(&philo->data->write);
+	struct timeval	current_time;
+
+	gettimeofday(&current_time, NULL);
+	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 }

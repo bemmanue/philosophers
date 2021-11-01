@@ -60,7 +60,7 @@ void	ft_putstr_fd(char *s, int fd)
 	if (!s || fd < 1)
 		return ;
 	i = 0;
-	len = ft_strlen(s);
+	len = (int)ft_strlen(s);
 	while (i < len)
 	{
 		write(fd, &s[i], 1);
@@ -113,5 +113,27 @@ void	ft_putlong_fd(long long n, int fd)
 	{
 		ft_putnbr_fd(n / 10, fd);
 		ft_putnbr_fd(n % 10, fd);
+	}
+}
+
+void	ft_usleep(int time)
+{
+	long long	current_time;
+	long long	finish_time;
+
+	finish_time = get_time() + time / 1000;
+	current_time = get_time();
+
+//	ft_putlong_fd(finish_time, 1);
+//	printf("finish = %lld", finish_time);
+//	ft_putstr_fd("     ", 1);
+//	ft_putlong_fd(current_time, 1);
+//	printf("current = %lld", current_time);
+	while (current_time < finish_time)
+	{
+		current_time = get_time();
+//		ft_putlong_fd(current_time, 1);
+//		ft_putstr_fd("\n", 1);
+		usleep(1);
 	}
 }

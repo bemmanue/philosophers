@@ -19,7 +19,6 @@ void	take_forks(t_philo *philo)
 
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, " has taken a fork\n");
-//	sleep(1);
 }
 
 void	put_forks(t_philo *philo)
@@ -28,7 +27,7 @@ void	put_forks(t_philo *philo)
 	print_status(philo, " is sleeping\n");
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
-	usleep(philo->data->time_to_sleep);
+	ft_usleep(philo->data->time_to_eat);
 	print_status(philo, " is thinking\n");
 }
 
