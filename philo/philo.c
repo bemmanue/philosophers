@@ -41,9 +41,13 @@ void	*routine(void *struct_philo)
 	pthread_create(&pthread, NULL, &monitor, philo);
 	while (1)
 	{
+//		if (philo->position % 2 == 1)
+//			usleep(10);
 		take_forks(philo);
-		eat(philo);
+		eating(philo);
 		put_forks(philo);
+		sleeping(philo);
+		thinking(philo);
 	}
 	return (NULL);
 }

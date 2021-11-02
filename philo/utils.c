@@ -123,17 +123,9 @@ void	ft_usleep(int time)
 
 	finish_time = get_time() + time / 1000;
 	current_time = get_time();
-
-//	ft_putlong_fd(finish_time, 1);
-//	printf("finish = %lld", finish_time);
-//	ft_putstr_fd("     ", 1);
-//	ft_putlong_fd(current_time, 1);
-//	printf("current = %lld", current_time);
 	while (current_time < finish_time)
 	{
 		current_time = get_time();
-//		ft_putlong_fd(current_time, 1);
-//		ft_putstr_fd("\n", 1);
 		usleep(1);
 	}
 }
