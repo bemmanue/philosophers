@@ -19,39 +19,38 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+typedef struct s_control
+{
+	int 			first_group;
+	int 			second_group;
+	int 			third_group;
+}					t_control;
+
 typedef struct s_philo
 {
 	int				position;
-	int				left_neighbour;
-	int				right_neighbour;
 	int				is_eating;
-	long long		current_time;
 	long long		time_limit;
+	int				*status;
 	pthread_t 		thread;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*eating;
 	struct s_data	*data;
 }					t_philo;
-
-//typedef struct s_waiter
-//{
-//	int				*eating_status;
-//	t_philo			*philos;
-//}					t_waiter;
 
 typedef struct s_data
 {
 	int				amount;
+	int 			groups;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int 			must_eat_count;
 	long 			start_time;
+	int				*priority;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	monitor;
 	pthread_mutex_t	write;
-	pthread_mutex_t	*eating;
 	t_philo			*philos;
 }					t_data;
 
@@ -59,7 +58,6 @@ void		init_data(t_data **data, int argc, char **argv);
 void		print_status(t_philo *philo, char *status);
 long long	get_time(void);
 void		ft_usleep(int time);
-int			permission(t_data *data, t_philo *philo);
 
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);

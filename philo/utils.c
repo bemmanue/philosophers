@@ -125,7 +125,7 @@ void	ft_usleep(int time)
 	current_time = get_time();
 	while (current_time < finish_time)
 	{
-		current_time = get_time();
 		usleep(1);
+		current_time = get_time();
 	}
 }
