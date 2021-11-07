@@ -12,12 +12,25 @@
 
 #include "philo.h"
 
-void	init_priority(t_data *data)
+void	init_groups(t_data *data)
 {
-	data->priority[0] = 1;
-	data->priority[1] = 0;
-	if (data->groups == 3)
-		data->priority[2] = 0;
+	int	i;
+	int last_group;
+
+	i = 0;
+	last_group = data->amount_of_groups - 1;
+	while (i < data->amount_of_groups)
+	{
+		data->groups[i].priority = 0;
+		if (data->amount_of_groups == 3 && i == last_group)
+			data->groups[i].all_philos = 1;
+		else
+			data->groups[i].all_philos = data->amount / 2;
+		data->groups[i].starving_philos = data->groups[i].all_philos;
+		data->groups[i].next = &data->groups[(i + 1) % data->amount_of_groups];
+		i++;
+	}
+	data->groups[0].priority = 1;
 }
 
 void	init_mutexes(t_data *data)
@@ -39,17 +52,21 @@ void	init_philos(t_data *data)
 	while (i < data->amount)
 	{
 		data->philos[i].position = i;
-		data->philos[i].is_eating = 0;
 		data->philos[i].time_limit = 0;
+		data->philos[i].must_eat = data->must_eat_count;
 		data->philos[i].left_fork = &data->forks[i];
 		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
 		data->philos[i].data = data;
-		if (data->groups == 3 && i == data->amount - 1)
-			data->philos[i].status = &data->priority[2];
-		else if (i % 2 == 1)
-			data->philos[i].status = &data->priority[1];
+		if (data->amount_of_groups == 3 && i == data->amount - 1)
+		{
+			data->philos[i].status = &data->groups[2].priority;
+			data->philos[i].is_starving = &data->groups[2].starving_philos;
+		}
 		else
-			data->philos[i].status = &data->priority[0];
+		{
+			data->philos[i].status = &data->groups[i % 2].priority;
+			data->philos[i].is_starving = &data->groups[i % 2].starving_philos;
+		}
 		i++;
 	}
 }
@@ -58,10 +75,7 @@ void	init_data(t_data **data, int argc, char **argv)
 {
 	*data = malloc(sizeof(t_data));
 	(*data)->amount = ft_atoi(argv[1]);
-	if ((*data)->amount % 2 == 0)
-		(*data)->groups = 2;
-	else
-		(*data)->groups = 3;
+	(*data)->amount_of_groups = 2 + ((*data)->amount % 2);
 	(*data)->time_to_die = ft_atoi(argv[2]) * 1000;
 	(*data)->time_to_eat = ft_atoi(argv[3]) * 1000;
 	(*data)->time_to_sleep = ft_atoi(argv[4]) * 1000;
@@ -69,10 +83,11 @@ void	init_data(t_data **data, int argc, char **argv)
 		(*data)->must_eat_count = ft_atoi(argv[5]);
 	else
 		(*data)->must_eat_count = 0;
+	(*data)->dead_philo = 0;
 	(*data)->philos = malloc(sizeof(t_philo) * (*data)->amount);
-	(*data)->priority = malloc(sizeof(int) * (*data)->groups);
+	(*data)->groups = malloc(sizeof(t_group) * (*data)->amount_of_groups);
 	(*data)->forks = malloc(sizeof(pthread_mutex_t) * (*data)->amount);
-	init_priority(*data);
 	init_mutexes(*data);
+	init_groups(*data);
 	init_philos(*data);
 }

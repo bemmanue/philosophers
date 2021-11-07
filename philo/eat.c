@@ -14,20 +14,19 @@
 
 void	eating(t_philo *philo)
 {
-	philo->is_eating = 1;
+	(*philo->is_starving)--;
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
-	print_status(philo, " is eating\n");
+	print_status(philo->data, philo->position + 1, " is eating\n");
 	ft_usleep(philo->data->time_to_eat);
 }
 
 void	sleeping(t_philo *philo)
 {
-	philo->is_eating = 0;
-	print_status(philo, " is sleeping\n");
+	print_status(philo->data, philo->position + 1, " is sleeping\n");
 	ft_usleep(philo->data->time_to_sleep);
 }
 
 void	thinking(t_philo *philo)
 {
-	print_status(philo, " is thinking\n");
+	print_status(philo->data, philo->position + 1, " is thinking\n");
 }

@@ -12,22 +12,50 @@
 
 #include "philo.h"
 
-void	*control_eating(void *struct_data)
+void	*control_2(void *struct_data)
 {
 	t_data	*data;
-	int 	i;
+	t_group	*group;
+	int		i;
 
 	data = struct_data;
-	i = 0;
-	ft_usleep(100 * 1000);
-	data->priority[0] = 0;
-	data->priority[1] = 1;
-	if (data->priority[i] == 1)
+	group = &data->groups[0];
+	i = data->must_eat_count * data->amount_of_groups;
+	while (!data->dead_philo && i > 0)
 	{
-		data->priority[i] == 0;
-		data->priority[i + 1] == 1;
+		if (group->priority == 1 && group->starving_philos == 0)
+		{
+			group->priority = 0;
+			group->starving_philos = group->all_philos;
+			group->next->priority = 1;
+			group = group->next;
+			i--;
+		}
 	}
-	return (0);
+	if (data->dead_philo)
+		print_status(data, data->dead_philo, " is dead\n");
+	return (NULL);
+}
+
+void	*control(void *struct_data)
+{
+	t_data	*data;
+	t_group	*group;
+
+	data = struct_data;
+	group = &data->groups[0];
+	while (!data->dead_philo)
+	{
+		if (group->priority == 1 && group->starving_philos == 0)
+		{
+			group->next->priority = 1;
+			group->priority = 0;
+			group->starving_philos = group->all_philos;
+			group = group->next;
+		}
+	}
+	print_status(data, data->dead_philo, " is dead\n");
+	return (NULL);
 }
 
 void	*monitor(void *struct_philo)
@@ -42,22 +70,22 @@ void	*monitor(void *struct_philo)
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
-			print_status(philo, " is dead\n");
-			exit(0);
+			philo->data->dead_philo = philo->position + 1;
+			break;
 		}
 		pthread_mutex_unlock(&philo->data->monitor);
 	}
 	return (NULL);
 }
 
-_Noreturn void	*routine(void *struct_philo)
+void	*routine(void *struct_philo)
 {
 	t_philo		*philo;
 	pthread_t	pthread;
 
 	philo = struct_philo;
 	pthread_create(&pthread, NULL, &monitor, philo);
-	while (1)
+	while (!philo->data->dead_philo)
 	{
 		take_forks(philo);
 		eating(philo);
@@ -65,28 +93,29 @@ _Noreturn void	*routine(void *struct_philo)
 		sleeping(philo);
 		thinking(philo);
 	}
-//	return (NULL);
+	return (NULL);
 }
 
 void	start_threads(t_data *data)
 {
 	pthread_t		pthread;
-	pthread_t		access;
 	t_philo			*philo;
 
 	int i = 0;
 	data->start_time = get_time();
-	pthread_create(&access, NULL, &control_eating, data);
-	pthread_detach(access);
+	if (!data->must_eat_count)
+		pthread_create(&pthread, NULL, &control, data);
+	else
+		pthread_create(&pthread, NULL, &control_2, data);
 	while (i < data->amount)
 	{
-		pthread = data->philos[i].thread;
-		philo = (void*)(&data->philos[i]);
-		pthread_create(&pthread, NULL, &routine, philo);
+		philo = &data->philos[i];
+		pthread_create(&philo->thread, NULL, &routine, philo);
 		philo->time_limit = data->start_time + data->time_to_die / 1000;
-		pthread_detach(pthread);
+		pthread_detach(data->philos[i].thread);
 		i++;
 	}
+	pthread_join(pthread, NULL);
 }
 
 int	main(int argc, char **argv)
@@ -100,6 +129,5 @@ int	main(int argc, char **argv)
 	}
 	init_data(&data, argc, argv);
 	start_threads(data);
-	sleep (200);
 	return (0);
 }
