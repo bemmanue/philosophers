@@ -14,12 +14,12 @@
 
 void	take_forks(t_philo *philo)
 {
-	while ((*philo->status) == 0)
-		ft_usleep(1);
+	while (!(*philo->status))
+			ft_usleep(philo->data->time_to_eat / 2);
 	pthread_mutex_lock(philo->left_fork);
-	print_status(philo->data, philo->position + 1, " has taken a fork\n");
+	print_status(philo, " has taken a fork\n");
 	pthread_mutex_lock(philo->right_fork);
-	print_status(philo->data, philo->position + 1, " has taken a fork\n");
+	print_status(philo, " has taken a fork\n");
 }
 
 void	put_forks(t_philo *philo)

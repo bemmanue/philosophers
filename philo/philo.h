@@ -31,7 +31,6 @@ typedef struct s_philo
 {
 	int				position;
 	long long		time_limit;
-	int 			must_eat;
 	int				*status;
 	int				*is_starving;
 	pthread_t 		thread;
@@ -58,7 +57,8 @@ typedef struct s_data
 }					t_data;
 
 void		init_data(t_data **data, int argc, char **argv);
-void		print_status(t_data *data, int philo, char *status);
+void		print_status(t_philo *philo, char *status);
+void		print_dead(t_philo *philo);
 long long	get_time(void);
 void		ft_usleep(int time);
 

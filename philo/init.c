@@ -53,7 +53,6 @@ void	init_philos(t_data *data)
 	{
 		data->philos[i].position = i;
 		data->philos[i].time_limit = 0;
-		data->philos[i].must_eat = data->must_eat_count;
 		data->philos[i].left_fork = &data->forks[i];
 		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
 		data->philos[i].data = data;

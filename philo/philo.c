@@ -32,8 +32,6 @@ void	*control_2(void *struct_data)
 			i--;
 		}
 	}
-	if (data->dead_philo)
-		print_status(data, data->dead_philo, " is dead\n");
 	return (NULL);
 }
 
@@ -54,7 +52,6 @@ void	*control(void *struct_data)
 			group = group->next;
 		}
 	}
-	print_status(data, data->dead_philo, " is dead\n");
 	return (NULL);
 }
 
@@ -66,14 +63,14 @@ void	*monitor(void *struct_philo)
 	philo = struct_philo;
 	while (1)
 	{
-		pthread_mutex_lock(&philo->data->monitor);
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
+			print_dead(philo);
 			philo->data->dead_philo = philo->position + 1;
 			break;
 		}
-		pthread_mutex_unlock(&philo->data->monitor);
+		ft_usleep(5000);
 	}
 	return (NULL);
 }
@@ -84,8 +81,9 @@ void	*routine(void *struct_philo)
 	pthread_t	pthread;
 
 	philo = struct_philo;
+	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
 	pthread_create(&pthread, NULL, &monitor, philo);
-	while (!philo->data->dead_philo)
+	while (1)
 	{
 		take_forks(philo);
 		eating(philo);
@@ -98,20 +96,19 @@ void	*routine(void *struct_philo)
 
 void	start_threads(t_data *data)
 {
-	pthread_t		pthread;
-	t_philo			*philo;
+	pthread_t	pthread;
+	t_philo		*philo;
 
 	int i = 0;
-	data->start_time = get_time();
 	if (!data->must_eat_count)
 		pthread_create(&pthread, NULL, &control, data);
 	else
 		pthread_create(&pthread, NULL, &control_2, data);
+	data->start_time = get_time();
 	while (i < data->amount)
 	{
 		philo = &data->philos[i];
 		pthread_create(&philo->thread, NULL, &routine, philo);
-		philo->time_limit = data->start_time + data->time_to_die / 1000;
 		pthread_detach(data->philos[i].thread);
 		i++;
 	}
