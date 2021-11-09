@@ -1,29 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   forks.c                                            :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/26 17:13:51 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/10/26 17:13:54 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/01 15:04:34 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/01 15:04:37 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	take_forks(t_philo *philo)
+long long	get_time(void)
 {
-	while (!(*philo->status))
-			ft_usleep(philo->data->time_to_eat / 3);
-	pthread_mutex_lock(philo->left_fork);
-	print_status(philo, " has taken a fork\n");
-	pthread_mutex_lock(philo->right_fork);
-	print_status(philo, " has taken a fork\n");
-}
+	struct timeval	current_time;
 
-void	put_forks(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_unlock(philo->left_fork);
+	gettimeofday(&current_time, NULL);
+	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 }
