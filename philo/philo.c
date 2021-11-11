@@ -44,11 +44,11 @@ void	*control(void *struct_data)
 	group = &data->groups[0];
 	while (!data->dead_philo)
 	{
-		if (group->priority == 1 && group->starving_philos == 0)
+		if (group->starving_philos <= 0)
 		{
-			group->next->priority = 1;
 			group->priority = 0;
 			group->starving_philos = group->all_philos;
+			group->next->priority = 1;
 			group = group->next;
 		}
 		ft_usleep(5000);

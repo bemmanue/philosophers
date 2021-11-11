@@ -15,7 +15,7 @@
 void	take_forks(t_philo *philo)
 {
 	while (!(*philo->status))
-			ft_usleep(philo->data->time_to_eat / 3);
+		ft_usleep(philo->data->time_to_eat / 10);
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, " has taken a fork\n");
 	pthread_mutex_lock(philo->right_fork);
