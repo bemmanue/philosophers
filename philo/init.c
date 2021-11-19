@@ -40,7 +40,6 @@ void	init_mutexes(t_data *data)
 	i = 0;
 	while (i < data->amount)
 		pthread_mutex_init(&data->forks[i++], NULL);
-	pthread_mutex_init(&data->monitor, NULL);
 	pthread_mutex_init(&data->write, NULL);
 }
 

@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-void	*control_2(void *struct_data)
+void	*control_count(void *struct_data)
 {
 	t_data	*data;
 	t_group	*group;
@@ -104,7 +104,7 @@ void	start_threads(t_data *data)
 	if (!data->must_eat_count)
 		pthread_create(&pthread, NULL, &control, data);
 	else
-		pthread_create(&pthread, NULL, &control_2, data);
+		pthread_create(&pthread, NULL, &control_count, data);
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
@@ -112,7 +112,6 @@ void	start_threads(t_data *data)
 		pthread_create(&philo->thread, NULL, &routine, philo);
 		pthread_detach(data->philos[i].thread);
 		i++;
-//		ft_usleep(1000);
 	}
 	pthread_join(pthread, NULL);
 }
@@ -124,7 +123,7 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 	{
 		printf("wrong arguments\n");
-		return (0);
+		return (1);
 	}
 	init_data(&data, argc, argv);
 	start_threads(data);

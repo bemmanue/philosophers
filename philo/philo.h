@@ -50,7 +50,6 @@ typedef struct s_data
 	int				dead_philo;
 	long 			start_time;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	monitor;
 	pthread_mutex_t	write;
 	t_philo			*philos;
 	t_group			*groups;

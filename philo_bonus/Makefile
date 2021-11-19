@@ -1,12 +1,12 @@
 
 NAME			=	philo
 
-SRCS			=	philo.c	\
-					utils.c	\
-					forks.c	\
-					eat.c	\
-					print.c	\
-					time.c	\
+SRCS			=	philo.c		\
+					utils.c		\
+					actions.c	\
+					print.c		\
+					time.c		\
+					exit.c		\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)

@@ -12,7 +12,19 @@
 
 #include "philo.h"
 
-void	*control_2(void *struct_data)
+void	wait_all(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->amount)
+	{
+		waitpid(data->pids[i], 0, 0);
+		i++;
+	}
+}
+
+void	*control_count(void *struct_data)
 {
 	t_data	*data;
 	t_group	*group;
@@ -67,6 +79,7 @@ void	*monitor(void *struct_philo)
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
+			kill_all(philo->data);
 			print_dead(philo);
 			philo->data->dead_philo = philo->position + 1;
 			break;
@@ -97,24 +110,19 @@ void	*routine(void *struct_philo)
 
 void	start_threads(t_data *data)
 {
-	pthread_t	pthread;
-	t_philo		*philo;
+	int		check_pid;
+	int		i;
 
-	int i = 0;
-	if (!data->must_eat_count)
-		pthread_create(&pthread, NULL, &control, data);
-	else
-		pthread_create(&pthread, NULL, &control_2, data);
+	i = 0;
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
-		philo = &data->philos[i];
-		pthread_create(&philo->thread, NULL, &routine, philo);
-		pthread_detach(data->philos[i].thread);
+		check_pid = fork();
+		if (check_pid == 0)
+			routine(&data->philos[i]);
+		data->pids[i] = check_pid;
 		i++;
-//		ft_usleep(1000);
 	}
-	pthread_join(pthread, NULL);
 }
 
 int	main(int argc, char **argv)
@@ -124,9 +132,16 @@ int	main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 	{
 		printf("wrong arguments\n");
-		return (0);
+		return (1);
 	}
 	init_data(&data, argc, argv);
+	sem_unlink("sem");
+	sem_unlink("write");
+	data->sem = sem_open("sem", O_CREAT, 0777, data->amount);
+	data->write = sem_open("write", O_CREAT, 0777, 1);
 	start_threads(data);
+	wait_all(data);
+	sem_close(data->sem);
+	sem_close(data->write);
 	return (0);
 }

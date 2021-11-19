@@ -35,13 +35,13 @@ void	init_groups(t_data *data)
 
 void	init_mutexes(t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (i < data->amount)
-		pthread_mutex_init(&data->forks[i++], NULL);
+//	int	i;
+//
+//	i = 0;
+//	while (i < data->amount)
+//		pthread_mutex_init(&data->forks[i++], NULL);
 	pthread_mutex_init(&data->monitor, NULL);
-	pthread_mutex_init(&data->write, NULL);
+//	pthread_mutex_init(&data->write, NULL);
 }
 
 void	init_philos(t_data *data)
@@ -53,8 +53,8 @@ void	init_philos(t_data *data)
 	{
 		data->philos[i].position = i;
 		data->philos[i].time_limit = 0;
-		data->philos[i].left_fork = &data->forks[i];
-		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
+//		data->philos[i].left_fork = &data->forks[i];
+//		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
 		data->philos[i].data = data;
 		if (data->amount_of_groups == 3 && i == data->amount - 1)
 		{
@@ -85,8 +85,7 @@ void	init_data(t_data **data, int argc, char **argv)
 	(*data)->dead_philo = 0;
 	(*data)->philos = malloc(sizeof(t_philo) * (*data)->amount);
 	(*data)->groups = malloc(sizeof(t_group) * (*data)->amount_of_groups);
-	(*data)->forks = malloc(sizeof(pthread_mutex_t) * (*data)->amount);
-	init_mutexes(*data);
+	(*data)->pids = malloc(sizeof(pid_t) * (*data)->amount);
 	init_groups(*data);
 	init_philos(*data);
 }

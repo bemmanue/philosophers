@@ -18,6 +18,9 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <semaphore.h>
 
 typedef struct s_group
 {
@@ -49,11 +52,12 @@ typedef struct s_data
 	int 			must_eat_count;
 	int				dead_philo;
 	long 			start_time;
-	pthread_mutex_t	*forks;
 	pthread_mutex_t	monitor;
-	pthread_mutex_t	write;
 	t_philo			*philos;
 	t_group			*groups;
+	pid_t			*pids;
+	sem_t			*sem;
+	sem_t			*write;
 }					t_data;
 
 void		init_data(t_data **data, int argc, char **argv);
@@ -75,5 +79,7 @@ void		ft_putstr_fd(char *s, int fd);
 void		ft_putnbr_fd(int n, int fd);
 void		ft_putlong_fd(long long n, int fd);
 size_t		ft_strlen(const char *str);
+
+void		kill_all(t_data *data);
 
 #endif

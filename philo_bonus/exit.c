@@ -1,32 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   eat.c                                              :+:      :+:    :+:   */
+/*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/26 18:11:10 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/10/26 18:11:12 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/19 14:40:39 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/19 14:40:41 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <philo.h>
+#include "philo.h"
 
-void	eating(t_philo *philo)
+void	kill_all(t_data *data)
 {
-	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
-	(*philo->is_starving)--;
-	print_status(philo, " is eating\n");
-	ft_usleep(philo->data->time_to_eat);
-}
+	int i;
 
-void	sleeping(t_philo *philo)
-{
-	print_status(philo, " is sleeping\n");
-	ft_usleep(philo->data->time_to_sleep);
-}
-
-void	thinking(t_philo *philo)
-{
-	print_status(philo, " is thinking\n");
+	i = 0;
+	while (i < data->amount)
+	{
+		kill(data->pids[i], SIGTERM);
+	}
+	sem_close(data->sem);
 }
