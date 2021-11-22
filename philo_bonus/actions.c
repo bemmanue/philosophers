@@ -24,8 +24,6 @@ void	take_forks(t_philo *philo)
 
 void	put_forks(t_philo *philo)
 {
-//	pthread_mutex_unlock(philo->right_fork);
-//	pthread_mutex_unlock(philo->left_fork);
 	sem_post(philo->data->sem);
 	sem_post(philo->data->sem);
 }

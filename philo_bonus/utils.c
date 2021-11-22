@@ -12,16 +12,6 @@
 
 #include "philo.h"
 
-size_t	ft_strlen(const char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] != '\0')
-		i++;
-	return (i);
-}
-
 int	ft_atoi(const char *str)
 {
 	int	min;
@@ -46,74 +36,12 @@ int	ft_atoi(const char *str)
 	return (nbr);
 }
 
-void	ft_putchar_fd(char c, int fd)
+long long	get_time(void)
 {
-	if (fd > 0)
-		write(fd, &c, 1);
-}
+	struct timeval	current_time;
 
-void	ft_putstr_fd(char *s, int fd)
-{
-	int	i;
-	int len;
-
-	if (!s || fd < 1)
-		return ;
-	i = 0;
-	len = (int)ft_strlen(s);
-	while (i < len)
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
-}
-
-void	ft_putnbr_fd(int n, int fd)
-{
-	char	b;
-
-	if (n >= 0 && n / 10 == 0)
-	{
-		b = n + 48;
-		ft_putchar_fd(b, fd);
-	}
-	else if (n == -2147483648)
-		ft_putstr_fd("-2147483648", fd);
-	else if (n < 0)
-	{
-		n = -n;
-		ft_putchar_fd('-', fd);
-		ft_putnbr_fd(n, fd);
-	}
-	else
-	{
-		ft_putnbr_fd(n / 10, fd);
-		ft_putnbr_fd(n % 10, fd);
-	}
-}
-
-void	ft_putlong_fd(long long n, int fd)
-{
-	char	b;
-
-	if (n >= 0 && n / 10 == 0)
-	{
-		b = n + 48;
-		ft_putchar_fd(b, fd);
-	}
-	else if (n == -2147483648)
-		ft_putstr_fd("-2147483648", fd);
-	else if (n < 0)
-	{
-		n = -n;
-		ft_putchar_fd('-', fd);
-		ft_putnbr_fd(n, fd);
-	}
-	else
-	{
-		ft_putnbr_fd(n / 10, fd);
-		ft_putnbr_fd(n % 10, fd);
-	}
+	gettimeofday(&current_time, NULL);
+	return (current_time.tv_sec * 1000 + current_time.tv_usec / 1000);
 }
 
 void	ft_usleep(int time)

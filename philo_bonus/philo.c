@@ -12,18 +12,6 @@
 
 #include "philo.h"
 
-void	wait_all(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->amount)
-	{
-		waitpid(data->pids[i], 0, 0);
-		i++;
-	}
-}
-
 void	*control_count(void *struct_data)
 {
 	t_data	*data;
@@ -79,10 +67,9 @@ void	*monitor(void *struct_philo)
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
-			kill_all(philo->data);
 			print_dead(philo);
 			philo->data->dead_philo = philo->position + 1;
-			break;
+			exit(0);
 		}
 		ft_usleep(5000);
 	}
@@ -97,6 +84,7 @@ void	*routine(void *struct_philo)
 	philo = struct_philo;
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
 	pthread_create(&pthread, NULL, &monitor, philo);
+	pthread_detach(pthread);
 	while (1)
 	{
 		take_forks(philo);
@@ -112,6 +100,7 @@ void	start_threads(t_data *data)
 {
 	int		check_pid;
 	int		i;
+	int 	status;
 
 	i = 0;
 	data->start_time = get_time();
@@ -122,6 +111,18 @@ void	start_threads(t_data *data)
 			routine(&data->philos[i]);
 		data->pids[i] = check_pid;
 		i++;
+	}
+
+	check_pid = waitpid(0, &status, 0);
+	i = 0;
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+	{
+		while (i < data->amount)
+		{
+			if (data->pids[i] != check_pid)
+				kill(data->pids[i], SIGKILL);
+			i++;
+		}
 	}
 }
 
@@ -140,7 +141,6 @@ int	main(int argc, char **argv)
 	data->sem = sem_open("sem", O_CREAT, 0777, data->amount);
 	data->write = sem_open("write", O_CREAT, 0777, 1);
 	start_threads(data);
-	wait_all(data);
 	sem_close(data->sem);
 	sem_close(data->write);
 	return (0);
