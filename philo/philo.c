@@ -23,7 +23,7 @@ void	*control_count(void *struct_data)
 	i = data->must_eat_count * data->amount_of_groups;
 	while (!data->dead_philo && i > 0)
 	{
-		if (group->priority == 1 && group->starving_philos == 0)
+		if (group->starving_philos <= 0)
 		{
 			group->priority = 0;
 			group->starving_philos = group->all_philos;
@@ -31,6 +31,7 @@ void	*control_count(void *struct_data)
 			group = group->next;
 			i--;
 		}
+		ft_usleep(5000);
 	}
 	return (NULL);
 }
@@ -62,13 +63,13 @@ void	*monitor(void *struct_philo)
 	long long	current_time;
 
 	philo = struct_philo;
-	while (1)
+	while (!philo->data->dead_philo)
 	{
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
-			print_dead(philo);
-			philo->data->dead_philo = philo->position + 1;
+			philo->data->dead_philo = 1;
+			print_death(philo);
 			break;
 		}
 		ft_usleep(5000);
@@ -84,7 +85,8 @@ void	*routine(void *struct_philo)
 	philo = struct_philo;
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
 	pthread_create(&pthread, NULL, &monitor, philo);
-	while (1)
+	pthread_detach(pthread);
+	while (!philo->data->dead_philo)
 	{
 		take_forks(philo);
 		eating(philo);
@@ -97,33 +99,57 @@ void	*routine(void *struct_philo)
 
 void	start_threads(t_data *data)
 {
-	pthread_t	pthread;
+	pthread_t	eating_control;
 	t_philo		*philo;
+	int 		i;
 
-	int i = 0;
+	i = 0;
 	if (!data->must_eat_count)
-		pthread_create(&pthread, NULL, &control, data);
+		pthread_create(&eating_control, NULL, &control, data);
 	else
-		pthread_create(&pthread, NULL, &control_count, data);
+		pthread_create(&eating_control, NULL, &control_count, data);
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
 		philo = &data->philos[i];
 		pthread_create(&philo->thread, NULL, &routine, philo);
-		pthread_detach(data->philos[i].thread);
 		i++;
 	}
-	pthread_join(pthread, NULL);
+	pthread_join(eating_control, NULL);
+	i = 0;
+	while (i < data->amount)
+	{
+		pthread_join(data->philos[i].thread, NULL);
+		i++;
+	}
+}
+
+int	check_arguments(int argc, char **argv)
+{
+	int		i;
+	long	check;
+
+	i = 1;
+	if (argc < 5 || argc > 6)
+		return (0);
+	while (i < argc)
+	{
+		check = philo_atol(argv[i]);
+		if (check < 0 || check > 2147483647)
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 int	main(int argc, char **argv)
 {
 	t_data	*data;
 
-	if (argc < 5 || argc > 6)
+	if (!check_arguments(argc, argv))
 	{
-		printf("wrong arguments\n");
-		return (1);
+		printf("Error: wrong arguments\n");
+		return (0);
 	}
 	init_data(&data, argc, argv);
 	start_threads(data);

@@ -57,22 +57,17 @@ typedef struct s_data
 
 void		init_data(t_data **data, int argc, char **argv);
 void		print_status(t_philo *philo, char *status);
-void		print_dead(t_philo *philo);
-long long	get_time(void);
-void		ft_usleep(int time);
+void		print_death(t_philo *philo);
 
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);
-
 void		eating(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		thinking(t_philo *philo);
 
 int			ft_atoi(const char *str);
-void		ft_putchar_fd(char c, int fd);
-void		ft_putstr_fd(char *s, int fd);
-void		ft_putnbr_fd(int n, int fd);
-void		ft_putlong_fd(long long n, int fd);
-size_t		ft_strlen(const char *str);
+long long	philo_atol(const char *str);
+long long	get_time(void);
+void		ft_usleep(int time);
 
 #endif
