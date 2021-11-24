@@ -112,7 +112,6 @@ void	start_threads(t_data *data)
 		data->pids[i] = check_pid;
 		i++;
 	}
-
 	check_pid = waitpid(0, &status, 0);
 	i = 0;
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)

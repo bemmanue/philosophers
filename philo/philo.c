@@ -12,51 +12,6 @@
 
 #include "philo.h"
 
-void	*control_count(void *struct_data)
-{
-	t_data	*data;
-	t_group	*group;
-	int		i;
-
-	data = struct_data;
-	group = &data->groups[0];
-	i = data->must_eat_count * data->amount_of_groups;
-	while (!data->dead_philo && i > 0)
-	{
-		if (group->starving_philos <= 0)
-		{
-			group->priority = 0;
-			group->starving_philos = group->all_philos;
-			group->next->priority = 1;
-			group = group->next;
-			i--;
-		}
-		ft_usleep(5000);
-	}
-	return (NULL);
-}
-
-void	*control(void *struct_data)
-{
-	t_data	*data;
-	t_group	*group;
-
-	data = struct_data;
-	group = &data->groups[0];
-	while (!data->dead_philo)
-	{
-		if (group->starving_philos <= 0)
-		{
-			group->priority = 0;
-			group->starving_philos = group->all_philos;
-			group->next->priority = 1;
-			group = group->next;
-		}
-		ft_usleep(5000);
-	}
-	return (NULL);
-}
-
 void	*monitor(void *struct_philo)
 {
 	t_philo		*philo;
@@ -69,11 +24,15 @@ void	*monitor(void *struct_philo)
 		if (current_time > philo->time_limit)
 		{
 			philo->data->dead_philo = 1;
+			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_unlock(philo->left_fork);
 			print_death(philo);
-			break;
+			break ;
 		}
 		ft_usleep(5000);
 	}
+	pthread_mutex_unlock(&philo->data->write);
+	pthread_mutex_destroy(&philo->data->write);
 	return (NULL);
 }
 
@@ -97,61 +56,50 @@ void	*routine(void *struct_philo)
 	return (NULL);
 }
 
-void	start_threads(t_data *data)
+int	start_threads(t_data *data)
 {
-	pthread_t	eating_control;
-	t_philo		*philo;
-	int 		i;
+	t_philo	*philo;
+	int		i;
 
 	i = 0;
-	if (!data->must_eat_count)
-		pthread_create(&eating_control, NULL, &control, data);
-	else
-		pthread_create(&eating_control, NULL, &control_count, data);
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
 		philo = &data->philos[i];
-		pthread_create(&philo->thread, NULL, &routine, philo);
+		if (pthread_create(&philo->thread, NULL, &routine, philo))
+			return (1);
 		i++;
 	}
-	pthread_join(eating_control, NULL);
-	i = 0;
-	while (i < data->amount)
-	{
-		pthread_join(data->philos[i].thread, NULL);
-		i++;
-	}
+	return (0);
 }
 
-int	check_arguments(int argc, char **argv)
+int	start_philosophers(int argc, char **argv)
 {
-	int		i;
-	long	check;
+	t_data	*data;
 
-	i = 1;
-	if (argc < 5 || argc > 6)
-		return (0);
-	while (i < argc)
-	{
-		check = philo_atol(argv[i]);
-		if (check < 0 || check > 2147483647)
-			return (0);
-		i++;
-	}
-	return (1);
+	if (init_data(&data, argc, argv))
+		return (1);
+	if (pthread_create(&data->eating_control, NULL, &control, data))
+		return (1);
+	if (start_threads(data))
+		return (1);
+	join_threads(data);
+	destroy_mutexes(data);
+	free_data(data);
+	return (0);
 }
 
 int	main(int argc, char **argv)
 {
-	t_data	*data;
-
-	if (!check_arguments(argc, argv))
+	if (check_arguments(argc, argv))
 	{
 		printf("Error: wrong arguments\n");
-		return (0);
+		return (1);
 	}
-	init_data(&data, argc, argv);
-	start_threads(data);
+	if (start_philosophers(argc, argv))
+	{
+		printf("Unexpected error\n");
+		return (1);
+	}
 	return (0);
 }

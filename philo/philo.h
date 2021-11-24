@@ -11,19 +11,20 @@
 /* ************************************************************************** */
 
 #ifndef PHILO_H
-#define PHILO_H
+# define PHILO_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <pthread.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <string.h>
 
 typedef struct s_group
 {
-	int				all_philos;
+	int				all_in_group;
 	int				starving_philos;
-	int 			priority;
+	int				priority;
 	struct s_group	*next;
 }					t_group;
 
@@ -33,7 +34,7 @@ typedef struct s_philo
 	long long		time_limit;
 	int				*status;
 	int				*is_starving;
-	pthread_t 		thread;
+	pthread_t		thread;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*left_fork;
 	struct s_data	*data;
@@ -42,22 +43,28 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int				amount;
-	int 			amount_of_groups;
+	int				amount_of_groups;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int 			must_eat_count;
+	int				must_eat_count;
 	int				dead_philo;
-	long 			start_time;
+	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	write;
 	t_philo			*philos;
 	t_group			*groups;
+	pthread_t		eating_control;
 }					t_data;
 
-void		init_data(t_data **data, int argc, char **argv);
+int			check_arguments(int argc, char **argv);
+int			init_data(t_data **data, int argc, char **argv);
+void		*control(void *struct_data);
 void		print_status(t_philo *philo, char *status);
 void		print_death(t_philo *philo);
+void		join_threads(t_data *data);
+void		destroy_mutexes(t_data *data);
+void		free_data(t_data *data);
 
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);
@@ -65,7 +72,6 @@ void		eating(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		thinking(t_philo *philo);
 
-int			ft_atoi(const char *str);
 long long	philo_atol(const char *str);
 long long	get_time(void);
 void		ft_usleep(int time);

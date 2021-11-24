@@ -5,6 +5,9 @@ SRCS			=	philo.c		\
 					utils.c		\
 					actions.c	\
 					print.c		\
+					check.c		\
+					control.c	\
+					exit.c		\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)

@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print.c                                            :+:      :+:    :+:   */
+/*   check.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/29 13:37:30 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/10/29 13:37:32 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/24 15:45:47 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/24 15:45:55 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_death(t_philo *philo)
+int	check_arguments(int argc, char **argv)
 {
-	printf("\033[22;34m%-10lld %d is dead\n",
-		get_time() - philo->data->start_time, philo->position + 1);
-}
+	long long	check;
+	int			i;
 
-void	print_status(t_philo *philo, char *status)
-{
-	if (philo->data->dead_philo)
-		return ;
-	pthread_mutex_lock(&philo->data->write);
-	printf("%-10lld %d %s",
-		get_time() - philo->data->start_time, philo->position + 1, status);
-	pthread_mutex_unlock(&philo->data->write);
+	if (argc < 5 || argc > 6)
+		return (0);
+	i = 1;
+	while (i < argc)
+	{
+		check = philo_atol(argv[i]);
+		if (check <= 0 || check > 2147483647)
+			return (1);
+		i++;
+	}
+	return (0);
 }
