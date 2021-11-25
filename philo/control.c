@@ -12,6 +12,33 @@
 
 #include "philo.h"
 
+void	*control_count(void *struct_data)
+{
+	t_data	*data;
+	t_group	*group;
+	int		times_to_eat;
+
+	data = struct_data;
+	times_to_eat = data->must_eat_count * data->amount_of_groups;
+	group = &data->groups[0];
+	group->priority = 1;
+	while (times_to_eat > 0 && !data->stop_simulation)
+	{
+		ft_usleep(5000);
+		if (group->starving_philos <= 0)
+		{
+			group->priority = 0;
+			group->starving_philos = group->all_in_group;
+			group = group->next;
+			group->priority = 1;
+			times_to_eat--;
+			if (times_to_eat == 0)
+				data->stop_simulation = -1;
+		}
+	}
+	return (NULL);
+}
+
 void	*control(void *struct_data)
 {
 	t_data	*data;
@@ -19,17 +46,17 @@ void	*control(void *struct_data)
 
 	data = struct_data;
 	group = &data->groups[0];
-	while (!data->dead_philo)
+	group->priority = 1;
+	while (!data->stop_simulation)
 	{
-		group->priority = 1;
+		ft_usleep(5000);
 		if (group->starving_philos <= 0)
 		{
 			group->priority = 0;
 			group->starving_philos = group->all_in_group;
 			group = group->next;
+			group->priority = 1;
 		}
-		ft_usleep(5000);
 	}
 	return (NULL);
 }
-

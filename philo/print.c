@@ -12,17 +12,21 @@
 
 #include "philo.h"
 
-void	print_death(t_philo *philo)
+void	print_exit_status(t_data *data)
 {
-	printf("\033[22;34m%-10lld %d is dead\n",
-		get_time() - philo->data->start_time, philo->position + 1);
+	if (data->stop_simulation < 0)
+		printf("\033[22;34m%-10lld all have eaten\n",
+			get_time() - data->start_time);
+	else if (data->stop_simulation > 0)
+		printf("\033[22;34m%-10lld %d is dead\n",
+			get_time() - data->start_time, data->stop_simulation);
 }
 
 void	print_status(t_philo *philo, char *status)
 {
-	if (philo->data->dead_philo)
-		return ;
 	pthread_mutex_lock(&philo->data->write);
+	if (philo->data->stop_simulation)
+		return ;
 	printf("%-10lld %d %s",
 		get_time() - philo->data->start_time, philo->position + 1, status);
 	pthread_mutex_unlock(&philo->data->write);

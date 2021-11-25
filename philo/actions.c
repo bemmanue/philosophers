@@ -14,10 +14,14 @@
 
 void	take_forks(t_philo *philo)
 {
-	if (philo->data->dead_philo)
+	if (philo->data->stop_simulation)
 		return ;
 	while (!(*philo->status))
+	{
+		if (philo->data->stop_simulation)
+			return ;
 		ft_usleep(philo->data->time_to_eat / 10);
+	}
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, " has taken a fork\n");
 	pthread_mutex_lock(philo->right_fork);
@@ -26,7 +30,7 @@ void	take_forks(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
-	if (philo->data->dead_philo)
+	if (philo->data->stop_simulation)
 		return ;
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
 	(*philo->is_starving)--;
@@ -36,7 +40,7 @@ void	eating(t_philo *philo)
 
 void	put_forks(t_philo *philo)
 {
-	if (philo->data->dead_philo)
+	if (philo->data->stop_simulation)
 		return ;
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
@@ -44,7 +48,7 @@ void	put_forks(t_philo *philo)
 
 void	sleeping(t_philo *philo)
 {
-	if (philo->data->dead_philo)
+	if (philo->data->stop_simulation)
 		return ;
 	print_status(philo, " is sleeping\n");
 	ft_usleep(philo->data->time_to_sleep);
@@ -52,7 +56,7 @@ void	sleeping(t_philo *philo)
 
 void	thinking(t_philo *philo)
 {
-	if (philo->data->dead_philo)
+	if (philo->data->stop_simulation)
 		return ;
 	print_status(philo, " is thinking\n");
 }

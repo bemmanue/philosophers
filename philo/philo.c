@@ -18,21 +18,16 @@ void	*monitor(void *struct_philo)
 	long long	current_time;
 
 	philo = struct_philo;
-	while (!philo->data->dead_philo)
+	while (!philo->data->stop_simulation)
 	{
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
-			philo->data->dead_philo = 1;
-			pthread_mutex_unlock(philo->right_fork);
-			pthread_mutex_unlock(philo->left_fork);
-			print_death(philo);
+			philo->data->stop_simulation = philo->position + 1;
 			break ;
 		}
 		ft_usleep(5000);
 	}
-	pthread_mutex_unlock(&philo->data->write);
-	pthread_mutex_destroy(&philo->data->write);
 	return (NULL);
 }
 
@@ -45,7 +40,7 @@ void	*routine(void *struct_philo)
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
 	pthread_create(&pthread, NULL, &monitor, philo);
 	pthread_detach(pthread);
-	while (!philo->data->dead_philo)
+	while (!philo->data->stop_simulation)
 	{
 		take_forks(philo);
 		eating(philo);
@@ -68,6 +63,7 @@ int	start_threads(t_data *data)
 		philo = &data->philos[i];
 		if (pthread_create(&philo->thread, NULL, &routine, philo))
 			return (1);
+		pthread_detach(philo->thread);
 		i++;
 	}
 	return (0);
@@ -76,16 +72,22 @@ int	start_threads(t_data *data)
 int	start_philosophers(int argc, char **argv)
 {
 	t_data	*data;
+	int		check;
 
 	if (init_data(&data, argc, argv))
 		return (1);
-	if (pthread_create(&data->eating_control, NULL, &control, data))
+	if (data->must_eat_count)
+		check = pthread_create(&data->control, NULL, &control_count, data);
+	else
+		check = pthread_create(&data->control, NULL, &control, data);
+	if (check)
 		return (1);
 	if (start_threads(data))
 		return (1);
 	join_threads(data);
+	print_exit_status(data);
 	destroy_mutexes(data);
-	free_data(data);
+	free_allocated_memory(data);
 	return (0);
 }
 

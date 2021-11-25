@@ -88,14 +88,16 @@ int	init_data(t_data **data, int argc, char **argv)
 		(*data)->must_eat_count = (int)philo_atol(argv[5]);
 	else
 		(*data)->must_eat_count = 0;
-	(*data)->dead_philo = 0;
+	(*data)->stop_simulation = 0;
 	(*data)->philos = malloc(sizeof(t_philo) * (*data)->amount);
 	(*data)->groups = malloc(sizeof(t_group) * (*data)->amount_of_groups);
 	(*data)->forks = malloc(sizeof(pthread_mutex_t) * (*data)->amount);
-	if (!(*data)->philos && !(*data)->groups && !(*data)->forks)
+	if ((!(*data)->philos || !(*data)->groups || !(*data)->forks)
+		& init_mutexes(*data))
+	{
+		free_allocated_memory(*data);
 		return (1);
-	if (init_mutexes(*data))
-		return (1);
+	}
 	init_groups(*data);
 	init_philos(*data);
 	return (0);

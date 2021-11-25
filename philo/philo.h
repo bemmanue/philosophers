@@ -48,29 +48,31 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				must_eat_count;
-	int				dead_philo;
-	long			start_time;
+	int				stop_simulation;
+	long long		start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	write;
 	t_philo			*philos;
 	t_group			*groups;
-	pthread_t		eating_control;
+	pthread_t		control;
 }					t_data;
 
 int			check_arguments(int argc, char **argv);
 int			init_data(t_data **data, int argc, char **argv);
 void		*control(void *struct_data);
+void		*control_count(void *struct_data);
 void		print_status(t_philo *philo, char *status);
-void		print_death(t_philo *philo);
-void		join_threads(t_data *data);
-void		destroy_mutexes(t_data *data);
-void		free_data(t_data *data);
+void		print_exit_status(t_data *data);
 
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);
 void		eating(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		thinking(t_philo *philo);
+
+void		join_threads(t_data *data);
+void		destroy_mutexes(t_data *data);
+void		free_allocated_memory(t_data *data);
 
 long long	philo_atol(const char *str);
 long long	get_time(void);

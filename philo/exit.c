@@ -12,11 +12,14 @@
 
 #include "philo.h"
 
-void	free_data(t_data *data)
+void	free_allocated_memory(t_data *data)
 {
-	free(data->philos);
-	free(data->groups);
-	free(data->forks);
+	if (data->philos)
+		free(data->philos);
+	if (data->groups)
+		free(data->groups);
+	if (data->forks)
+		free(data->forks);
 	free(data);
 }
 
@@ -25,8 +28,11 @@ void	destroy_mutexes(t_data *data)
 	int	i;
 
 	i = 0;
+	pthread_mutex_unlock(&data->write);
+	pthread_mutex_destroy(&data->write);
 	while (i < data->amount)
 	{
+		pthread_mutex_unlock(&data->forks[i]);
 		pthread_mutex_destroy(&data->forks[i]);
 		i++;
 	}
@@ -36,8 +42,8 @@ void	join_threads(t_data *data)
 {
 	int	i;
 
+	pthread_join(data->control, NULL);
 	i = 0;
-	pthread_join(data->eating_control, NULL);
 	while (i < data->amount)
 	{
 		pthread_join(data->philos[i].thread, NULL);
