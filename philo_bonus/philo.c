@@ -12,50 +12,6 @@
 
 #include "philo.h"
 
-void	*control_count(void *struct_data)
-{
-	t_data	*data;
-	t_group	*group;
-	int		i;
-
-	data = struct_data;
-	group = &data->groups[0];
-	i = data->must_eat_count * data->amount_of_groups;
-	while (!data->dead_philo && i > 0)
-	{
-		if (group->priority == 1 && group->starving_philos == 0)
-		{
-			group->priority = 0;
-			group->starving_philos = group->all_philos;
-			group->next->priority = 1;
-			group = group->next;
-			i--;
-		}
-	}
-	return (NULL);
-}
-
-void	*control(void *struct_data)
-{
-	t_data	*data;
-	t_group	*group;
-
-	data = struct_data;
-	group = &data->groups[0];
-	while (!data->dead_philo)
-	{
-		if (group->priority == 1 && group->starving_philos == 0)
-		{
-			group->next->priority = 1;
-			group->priority = 0;
-			group->starving_philos = group->all_philos;
-			group = group->next;
-		}
-		ft_usleep(5000);
-	}
-	return (NULL);
-}
-
 void	*monitor(void *struct_philo)
 {
 	t_philo		*philo;
@@ -67,8 +23,9 @@ void	*monitor(void *struct_philo)
 		current_time = get_time();
 		if (current_time > philo->time_limit)
 		{
-			print_dead(philo);
-			philo->data->dead_philo = philo->position + 1;
+			sem_wait(philo->data->write);
+			philo->data->stop_simulation = philo->position + 1;
+			print_exit_status(philo->data);
 			exit(0);
 		}
 		ft_usleep(5000);
@@ -96,51 +53,58 @@ void	*routine(void *struct_philo)
 	return (NULL);
 }
 
-void	start_threads(t_data *data)
+void	start_processes(t_data *data)
 {
-	int		check_pid;
-	int		i;
-	int 	status;
+	int	pid;
+	int	i;
 
 	i = 0;
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
-		check_pid = fork();
-		if (check_pid == 0)
-			routine(&data->philos[i]);
-		data->pids[i] = check_pid;
+		pid = fork();
+		if (pid == 0)
+			routine(data->philos[i]);
+		data->pids[i] = pid;
+		ft_usleep(2000);
 		i++;
 	}
-	check_pid = waitpid(0, &status, 0);
-	i = 0;
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
-	{
-		while (i < data->amount)
-		{
-			if (data->pids[i] != check_pid)
-				kill(data->pids[i], SIGKILL);
-			i++;
-		}
-	}
+}
+
+void	set_sems(t_data *data)
+{
+	sem_unlink("sem");
+	sem_unlink("write");
+	data->forks = sem_open("sem", O_CREAT, 0777, data->amount);
+	data->write = sem_open("write", O_CREAT, 0777, 1);
+}
+
+int	start_philosophers(int argc, char **argv)
+{
+	t_data	*data;
+
+	data = init_data(argc, argv);
+	if (!data)
+		return (1);
+	set_sems(data);
+	start_processes(data);
+	exit_processes(data);
+	sem_close(data->forks);
+	sem_close(data->write);
+	return (0);
 }
 
 int	main(int argc, char **argv)
 {
-	t_data	*data;
-
-	if (argc < 5 || argc > 6)
+	if (check_arguments(argc, argv))
 	{
-		printf("wrong arguments\n");
+		printf("Error: wrong arguments\n");
 		return (1);
 	}
-	init_data(&data, argc, argv);
-	sem_unlink("sem");
-	sem_unlink("write");
-	data->sem = sem_open("sem", O_CREAT, 0777, data->amount);
-	data->write = sem_open("write", O_CREAT, 0777, 1);
-	start_threads(data);
-	sem_close(data->sem);
-	sem_close(data->write);
+	if (start_philosophers(argc, argv))
+	{
+		printf("Unexpected error\n");
+		return (1);
+	}
 	return (0);
 }

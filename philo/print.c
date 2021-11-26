@@ -24,9 +24,11 @@ void	print_exit_status(t_data *data)
 
 void	print_status(t_philo *philo, char *status)
 {
+	if (philo->data->stop_simulation)
+		return;
 	pthread_mutex_lock(&philo->data->write);
 	if (philo->data->stop_simulation)
-		return ;
+		return;
 	printf("%-10lld %d %s",
 		get_time() - philo->data->start_time, philo->position + 1, status);
 	pthread_mutex_unlock(&philo->data->write);

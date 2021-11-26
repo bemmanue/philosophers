@@ -14,12 +14,14 @@
 
 //"\033[22;34mHello, world!\033[0m"
 
-void	print_dead(t_philo *philo)
+void	print_exit_status(t_data *data)
 {
-	sem_wait(philo->data->write);
-	printf("%-10lld %d is dead\n", get_time() - philo->data->start_time,
-		philo->position + 1);
-	sem_post(philo->data->write);
+	if (data->stop_simulation < 0)
+		printf("\033[22;34m%-10lld all have eaten\n",
+			   get_time() - data->start_time);
+	else if (data->stop_simulation > 0)
+		printf("\033[22;34m%-10lld %d is dead\n",
+			   get_time() - data->start_time, data->stop_simulation);
 }
 
 void	print_status(t_philo *philo, char *status)

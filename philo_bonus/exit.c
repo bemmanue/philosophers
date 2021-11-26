@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/24 19:36:03 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/11/24 19:38:32 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/26 19:57:44 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/26 19:57:46 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,26 @@ void	free_allocated_memory(t_data *data)
 {
 	if (data->philos)
 		free(data->philos);
-	if (data->groups)
-		free(data->groups);
 	if (data->forks)
 		free(data->forks);
 	free(data);
 }
 
-void	destroy_mutexes(t_data *data)
+void	exit_processes(t_data *data)
 {
-	int	i;
+	int	pid;
+	int status;
+	int i;
 
+	pid = waitpid(0, &status, 0);
 	i = 0;
-	pthread_mutex_unlock(&data->write);
-	pthread_mutex_destroy(&data->write);
-	while (i < data->amount)
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 	{
-		pthread_mutex_unlock(&data->forks[i]);
-		pthread_mutex_destroy(&data->forks[i]);
-		i++;
-	}
-}
-
-void	join_threads(t_data *data)
-{
-	int	i;
-	int	check;
-
-	pthread_join(data->control, NULL);
-	i = 0;
-	while (i < data->amount)
-	{
-		check = pthread_join(data->philos[i]->thread, NULL);
-		if (check)
-			printf("error\n");
-		i++;
+		while (i < data->amount)
+		{
+			if (data->pids[i] != pid)
+				kill(data->pids[i], SIGKILL);
+			i++;
+		}
 	}
 }

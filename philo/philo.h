@@ -52,13 +52,12 @@ typedef struct s_data
 	long long		start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	write;
-	t_philo			*philos;
+	t_philo			**philos;
 	t_group			*groups;
 	pthread_t		control;
 }					t_data;
 
 int			check_arguments(int argc, char **argv);
-int			init_data(t_data **data, int argc, char **argv);
 void		*control(void *struct_data);
 void		*control_count(void *struct_data);
 void		print_status(t_philo *philo, char *status);
@@ -77,5 +76,7 @@ void		free_allocated_memory(t_data *data);
 long long	philo_atol(const char *str);
 long long	get_time(void);
 void		ft_usleep(int time);
+
+t_data		*init_data(int argc, char **argv);
 
 #endif

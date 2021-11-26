@@ -14,24 +14,21 @@
 
 void	take_forks(t_philo *philo)
 {
-//	while (!(*philo->status))
-//			ft_usleep(philo->data->time_to_eat / 3);
-	sem_wait(philo->data->sem);
-	sem_wait(philo->data->sem);
+	sem_wait(philo->data->forks);
+	sem_wait(philo->data->forks);
 	print_status(philo, " has taken a fork\n");
 	print_status(philo, " has taken a fork\n");
 }
 
 void	put_forks(t_philo *philo)
 {
-	sem_post(philo->data->sem);
-	sem_post(philo->data->sem);
+	sem_post(philo->data->forks);
+	sem_post(philo->data->forks);
 }
 
 void	eating(t_philo *philo)
 {
 	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
-	(*philo->is_starving)--;
 	print_status(philo, " is eating\n");
 	ft_usleep(philo->data->time_to_eat);
 }
