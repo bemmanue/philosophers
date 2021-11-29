@@ -7,6 +7,7 @@ SRCS			=	philo.c		\
 					print.c		\
 					exit.c		\
 					check.c		\
+					sems.c		\
 					init.c
 
 OBJS			=	$(SRCS:.c=.o)

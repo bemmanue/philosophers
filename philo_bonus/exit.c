@@ -14,22 +14,35 @@
 
 void	free_allocated_memory(t_data *data)
 {
-	if (data->philos)
-		free(data->philos);
-	if (data->forks)
-		free(data->forks);
-	free(data);
+	if (data)
+	{
+		if (data->philos)
+			free(data->philos);
+		if (data->pids)
+			free(data->pids);
+		free(data);
+	}
 }
 
 void	exit_processes(t_data *data)
 {
 	int	pid;
-	int status;
-	int i;
+	int	status;
+	int	i;
 
 	pid = waitpid(0, &status, 0);
-	i = 0;
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+	i = 1;
+	while (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+	{
+		if (i == data->amount)
+		{
+			print_exit_status(data, -1);
+			break ;
+		}
+		i++;
+		waitpid(0, &status, 0);
+	}
+	if (WIFEXITED(status) && WEXITSTATUS(status))
 	{
 		while (i < data->amount)
 		{

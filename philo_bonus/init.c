@@ -19,22 +19,17 @@ void	init_philos(t_data *data)
 	i = 0;
 	while (i < data->amount)
 	{
-		data->philos[i] = malloc(sizeof(t_philo));
-		if (!data->philos[i])
-		{
-			free_allocated_memory(data);
-			return ;
-		}
-		data->philos[i]->position = i;
-		data->philos[i]->time_limit = 0;
-		data->philos[i]->data = data;
+		data->philos[i].position = i;
+		data->philos[i].has_eaten = 0;
+		data->philos[i].time_limit = 0;
+		data->philos[i].data = data;
 		i++;
 	}
 }
 
 t_data	*init_data(int argc, char **argv)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = malloc(sizeof(t_data));
 	if (!data)
@@ -48,13 +43,10 @@ t_data	*init_data(int argc, char **argv)
 	else
 		data->must_eat_count = 0;
 	data->stop_simulation = 0;
-	data->philos = malloc(sizeof(t_philo *) * data->amount);
+	data->philos = malloc(sizeof(t_philo) * data->amount);
 	data->pids = malloc(sizeof(pid_t) * data->amount);
-	if (!data->philos)
-	{
-		free_allocated_memory(data);
+	if (!data->philos || !data->pids)
 		return (NULL);
-	}
 	init_philos(data);
 	return (data);
 }

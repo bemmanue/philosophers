@@ -14,13 +14,16 @@
 
 void	free_allocated_memory(t_data *data)
 {
-	if (data->philos)
-		free(data->philos);
-	if (data->groups)
-		free(data->groups);
-	if (data->forks)
-		free(data->forks);
-	free(data);
+	if (data)
+	{
+		if (data->philos)
+			free(data->philos);
+		if (data->groups)
+			free(data->groups);
+		if (data->forks)
+			free(data->forks);
+		free(data);
+	}
 }
 
 void	destroy_mutexes(t_data *data)
@@ -41,15 +44,11 @@ void	destroy_mutexes(t_data *data)
 void	join_threads(t_data *data)
 {
 	int	i;
-	int	check;
 
-	pthread_join(data->control, NULL);
 	i = 0;
 	while (i < data->amount)
 	{
-		check = pthread_join(data->philos[i]->thread, NULL);
-		if (check)
-			printf("error\n");
+		pthread_join(data->philos[i].thread, NULL);
 		i++;
 	}
 }

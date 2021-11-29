@@ -1,31 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check.c                                            :+:      :+:    :+:   */
+/*   sems.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/24 15:45:47 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/11/24 15:45:55 by bemmanue         ###   ########.fr       */
+/*   Created: 2021/11/29 17:01:59 by bemmanue          #+#    #+#             */
+/*   Updated: 2021/11/29 17:02:01 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include <philo.h>
 
-int	check_arguments(int argc, char **argv)
+void	open_sems(t_data *data)
 {
-	long long	check;
-	int			i;
+	sem_unlink("forks");
+	sem_unlink("write");
+	data->forks = sem_open("forks", O_CREAT, 0777, data->amount);
+	data->write = sem_open("write", O_CREAT, 0777, 1);
+	if (data->forks == SEM_FAILED || data->write == SEM_FAILED)
+		return ;
+}
 
-	if (argc < 5 || argc > 6)
-		return (1);
-	i = 1;
-	while (i < argc)
-	{
-		check = philo_atol(argv[i]);
-		if (check <= 0 || check > 2147483647)
-			return (1);
-		i++;
-	}
-	return (0);
+void	close_sems(t_data *data)
+{
+	sem_close(data->forks);
+	sem_close(data->write);
 }

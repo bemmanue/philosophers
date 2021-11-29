@@ -15,7 +15,7 @@
 void	*monitor(void *struct_philo)
 {
 	t_philo		*philo;
-	long long	current_time;
+	uint64_t	current_time;
 
 	philo = struct_philo;
 	while (1)
@@ -24,9 +24,8 @@ void	*monitor(void *struct_philo)
 		if (current_time > philo->time_limit)
 		{
 			sem_wait(philo->data->write);
-			philo->data->stop_simulation = philo->position + 1;
-			print_exit_status(philo->data);
-			exit(0);
+			print_exit_status(philo->data, philo->position + 1);
+			exit(philo->position + 1);
 		}
 		ft_usleep(5000);
 	}
@@ -64,19 +63,11 @@ void	start_processes(t_data *data)
 	{
 		pid = fork();
 		if (pid == 0)
-			routine(data->philos[i]);
+			routine(&data->philos[i]);
 		data->pids[i] = pid;
 		ft_usleep(2000);
 		i++;
 	}
-}
-
-void	set_sems(t_data *data)
-{
-	sem_unlink("sem");
-	sem_unlink("write");
-	data->forks = sem_open("sem", O_CREAT, 0777, data->amount);
-	data->write = sem_open("write", O_CREAT, 0777, 1);
 }
 
 int	start_philosophers(int argc, char **argv)
@@ -85,12 +76,15 @@ int	start_philosophers(int argc, char **argv)
 
 	data = init_data(argc, argv);
 	if (!data)
+	{
+		free_allocated_memory(data);
 		return (1);
-	set_sems(data);
+	}
+	open_sems(data);
 	start_processes(data);
 	exit_processes(data);
-	sem_close(data->forks);
-	sem_close(data->write);
+	close_sems(data);
+	free_allocated_memory(data);
 	return (0);
 }
 

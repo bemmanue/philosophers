@@ -11,21 +11,22 @@
 /* ************************************************************************** */
 
 #ifndef PHILO_H
-#define PHILO_H
+# define PHILO_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <semaphore.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <pthread.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <signal.h>
+# include <sys/types.h>
+# include <semaphore.h>
 
 typedef struct s_philo
 {
 	int				position;
-	long long		time_limit;
+	uint64_t		time_limit;
+	int				has_eaten;
 	struct s_data	*data;
 }					t_philo;
 
@@ -35,10 +36,10 @@ typedef struct s_data
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	int 			must_eat_count;
+	int				must_eat_count;
 	int				stop_simulation;
-	long long 		start_time;
-	t_philo			**philos;
+	uint64_t		start_time;
+	t_philo			*philos;
 	pid_t			*pids;
 	sem_t			*forks;
 	sem_t			*write;
@@ -46,12 +47,14 @@ typedef struct s_data
 
 t_data		*init_data(int argc, char **argv);
 void		print_status(t_philo *philo, char *status);
-void		print_exit_status(t_data *data);
-long long	get_time(void);
+void		print_exit_status(t_data *data, int status);
+uint64_t	get_time(void);
 void		ft_usleep(int time);
 void		free_allocated_memory(t_data *data);
 void		exit_processes(t_data *data);
 int			check_arguments(int argc, char **argv);
+void		open_sems(t_data *data);
+void		close_sems(t_data *data);
 
 void		take_forks(t_philo *philo);
 void		put_forks(t_philo *philo);
@@ -59,7 +62,7 @@ void		eating(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		thinking(t_philo *philo);
 
-long long	philo_atol(const char *str);
+uint64_t	philo_atol(const char *str);
 void		free_allocated_memory(t_data *data);
 
 #endif

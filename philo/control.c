@@ -60,3 +60,16 @@ void	*control(void *struct_data)
 	}
 	return (NULL);
 }
+
+int	start_control(t_data *data)
+{
+	int		check;
+
+	if (data->must_eat_count)
+		check = pthread_create(&data->control, NULL, &control_count, data);
+	else
+		check = pthread_create(&data->control, NULL, &control, data);
+	if (check)
+		return (1);
+	return (0);
+}

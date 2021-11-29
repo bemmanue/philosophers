@@ -20,17 +20,21 @@ void	take_forks(t_philo *philo)
 	print_status(philo, " has taken a fork\n");
 }
 
+void	eating(t_philo *philo)
+{
+	philo->has_eaten++;
+	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
+	print_status(philo, " is eating\n");
+	ft_usleep(philo->data->time_to_eat);
+}
+
 void	put_forks(t_philo *philo)
 {
 	sem_post(philo->data->forks);
 	sem_post(philo->data->forks);
-}
-
-void	eating(t_philo *philo)
-{
-	philo->time_limit = get_time() + philo->data->time_to_die / 1000;
-	print_status(philo, " is eating\n");
-	ft_usleep(philo->data->time_to_eat);
+	if (philo->data->must_eat_count > 0
+		&& philo->has_eaten >= philo->data->must_eat_count)
+		exit(0);
 }
 
 void	sleeping(t_philo *philo)

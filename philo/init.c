@@ -55,26 +55,20 @@ void	init_philos(t_data *data)
 	i = 0;
 	while (i < data->amount)
 	{
-		data->philos[i] = malloc(sizeof(t_philo));
-		if (!data->philos[i])
-		{
-			free_allocated_memory(data);
-			return ;
-		}
-		data->philos[i]->position = i;
-		data->philos[i]->time_limit = 0;
-		data->philos[i]->left_fork = &data->forks[i];
-		data->philos[i]->right_fork = &data->forks[(i + 1) % data->amount];
-		data->philos[i]->data = data;
+		data->philos[i].position = i;
+		data->philos[i].time_limit = 0;
+		data->philos[i].left_fork = &data->forks[i];
+		data->philos[i].right_fork = &data->forks[(i + 1) % data->amount];
+		data->philos[i].data = data;
 		if (data->amount_of_groups == 3 && i == data->amount - 1)
 		{
-			data->philos[i]->status = &data->groups[2].priority;
-			data->philos[i]->is_starving = &data->groups[2].starving_philos;
+			data->philos[i].status = &data->groups[2].priority;
+			data->philos[i].is_starving = &data->groups[2].starving_philos;
 		}
 		else
 		{
-			data->philos[i]->status = &data->groups[i % 2].priority;
-			data->philos[i]->is_starving = &data->groups[i % 2].starving_philos;
+			data->philos[i].status = &data->groups[i % 2].priority;
+			data->philos[i].is_starving = &data->groups[i % 2].starving_philos;
 		}
 		i++;
 	}
@@ -97,14 +91,11 @@ t_data	*init_data(int argc, char **argv)
 	else
 		data->must_eat_count = 0;
 	data->stop_simulation = 0;
-	data->philos = malloc(sizeof(t_philo *) * data->amount);
+	data->philos = malloc(sizeof(t_philo) * data->amount);
 	data->groups = malloc(sizeof(t_group) * data->amount_of_groups);
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->amount);
-	if ((!data->philos || !data->groups || !data->forks) & init_mutexes(data))
-	{
-		free_allocated_memory(data);
+	if (!data->philos || !data->groups || !data->forks || init_mutexes(data))
 		return (NULL);
-	}
 	init_groups(data);
 	init_philos(data);
 	return (data);

@@ -63,7 +63,7 @@ int	start_threads(t_data *data)
 	data->start_time = get_time();
 	while (i < data->amount)
 	{
-		philo = data->philos[i];
+		philo = &data->philos[i];
 		if (pthread_create(&philo->thread, NULL, &routine, philo))
 			return (1);
 		i++;
@@ -74,21 +74,16 @@ int	start_threads(t_data *data)
 int	start_philosophers(int argc, char **argv)
 {
 	t_data	*data;
-	int		check;
 
 	data = init_data(argc, argv);
-	if (!data)
+	if (!data || start_control(data) || start_threads(data))
+	{
+		free_allocated_memory(data);
 		return (1);
-	if (data->must_eat_count)
-		check = pthread_create(&data->control, NULL, &control_count, data);
-	else
-		check = pthread_create(&data->control, NULL, &control, data);
-	if (check)
-		return (1);
-	if (start_threads(data))
-		return (1);
-	join_threads(data);
+	}
+	pthread_join(data->control, NULL);
 	print_exit_status(data);
+	join_threads(data);
 	destroy_mutexes(data);
 	free_allocated_memory(data);
 	return (0);

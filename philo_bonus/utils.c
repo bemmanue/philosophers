@@ -12,9 +12,9 @@
 
 #include "philo.h"
 
-long long	philo_atol(const char *str)
+uint64_t	philo_atol(const char *str)
 {
-	long long	nbr;
+	uint64_t	nbr;
 	int			dgt;
 
 	nbr = 0;
@@ -29,7 +29,7 @@ long long	philo_atol(const char *str)
 	return (nbr);
 }
 
-long long	get_time(void)
+uint64_t	get_time(void)
 {
 	struct timeval	current_time;
 
@@ -39,8 +39,8 @@ long long	get_time(void)
 
 void	ft_usleep(int time)
 {
-	long long	current_time;
-	long long	finish_time;
+	uint64_t	current_time;
+	uint64_t	finish_time;
 
 	finish_time = get_time() + time / 1000;
 	current_time = get_time();

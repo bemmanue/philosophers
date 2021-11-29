@@ -14,14 +14,14 @@
 
 //"\033[22;34mHello, world!\033[0m"
 
-void	print_exit_status(t_data *data)
+void	print_exit_status(t_data *data, int status)
 {
-	if (data->stop_simulation < 0)
+	if (status < 0)
 		printf("\033[22;34m%-10lld all have eaten\n",
-			   get_time() - data->start_time);
-	else if (data->stop_simulation > 0)
+			get_time() - data->start_time);
+	if (status > 0)
 		printf("\033[22;34m%-10lld %d is dead\n",
-			   get_time() - data->start_time, data->stop_simulation);
+			get_time() - data->start_time, status);
 }
 
 void	print_status(t_philo *philo, char *status)
