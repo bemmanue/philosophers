@@ -19,7 +19,11 @@ void	open_sems(t_data *data)
 	data->forks = sem_open("forks", O_CREAT, 0777, data->amount);
 	data->write = sem_open("write", O_CREAT, 0777, 1);
 	if (data->forks == SEM_FAILED || data->write == SEM_FAILED)
-		return ;
+	{
+		free_allocated_memory(data);
+		write(2, "Error\n", 6);
+		exit(0);
+	}
 }
 
 void	close_sems(t_data *data)

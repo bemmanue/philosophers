@@ -20,10 +20,15 @@ void	take_forks(t_philo *philo)
 	{
 		if (philo->data->stop_simulation)
 			return ;
-		ft_usleep(philo->data->time_to_eat / 10);
+		ft_usleep(5000);
 	}
 	pthread_mutex_lock(philo->left_fork);
 	print_status(philo, " has taken a fork\n");
+	if (philo->data->amount == 1)
+	{
+		ft_usleep(philo->data->time_to_die + 1000);
+		return ;
+	}
 	pthread_mutex_lock(philo->right_fork);
 	print_status(philo, " has taken a fork\n");
 }

@@ -24,7 +24,7 @@ void	*control_count(void *struct_data)
 	group->priority = 1;
 	while (times_to_eat > 0 && !data->stop_simulation)
 	{
-		ft_usleep(5000);
+		ft_usleep(4000);
 		if (group->starving_philos <= 0)
 		{
 			group->priority = 0;
@@ -49,7 +49,7 @@ void	*control(void *struct_data)
 	group->priority = 1;
 	while (!data->stop_simulation)
 	{
-		ft_usleep(5000);
+		ft_usleep(4000);
 		if (group->starving_philos <= 0)
 		{
 			group->priority = 0;

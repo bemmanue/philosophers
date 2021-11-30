@@ -14,11 +14,11 @@
 
 int	check_arguments(int argc, char **argv)
 {
-	long long	check;
+	uint64_t	check;
 	int			i;
 
 	if (argc < 5 || argc > 6)
-		return (0);
+		return (1);
 	i = 1;
 	while (i < argc)
 	{

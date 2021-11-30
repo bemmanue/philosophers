@@ -12,8 +12,6 @@
 
 #include "philo.h"
 
-//"\033[22;34mHello, world!\033[0m"
-
 void	print_exit_status(t_data *data, int status)
 {
 	if (status < 0)

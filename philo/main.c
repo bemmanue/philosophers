@@ -15,7 +15,7 @@
 void	*monitor(void *struct_philo)
 {
 	t_philo		*philo;
-	long long	current_time;
+	uint64_t	current_time;
 
 	philo = struct_philo;
 	while (!philo->data->stop_simulation)
@@ -26,7 +26,7 @@ void	*monitor(void *struct_philo)
 			philo->data->stop_simulation = philo->position + 1;
 			break ;
 		}
-		ft_usleep(5000);
+		ft_usleep(4000);
 	}
 	return (NULL);
 }
