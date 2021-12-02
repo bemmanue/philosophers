@@ -21,7 +21,7 @@ void	open_sems(t_data *data)
 	if (data->forks == SEM_FAILED || data->write == SEM_FAILED)
 	{
 		free_allocated_memory(data);
-		write(2, "Error\n", 6);
+		write(2, "\033[22;33mError\n", 14);
 		exit(0);
 	}
 }

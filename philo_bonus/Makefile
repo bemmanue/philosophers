@@ -1,5 +1,5 @@
 
-NAME			=	philo
+NAME			=	philo_bonus
 
 SRCS			=	main.c		\
 					utils.c		\

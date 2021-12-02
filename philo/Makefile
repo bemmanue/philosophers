@@ -1,7 +1,7 @@
 
 NAME			=	philo
 
-SRCS			=	philo.c		\
+SRCS			=	main.c		\
 					utils.c		\
 					actions.c	\
 					print.c		\

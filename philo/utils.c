@@ -16,14 +16,16 @@ uint64_t	philo_atol(const char *str)
 {
 	uint64_t	nbr;
 	int			dgt;
+	int			i;
 
 	nbr = 0;
-	while (*str)
+	i = 0;
+	while (str[i])
 	{
-		if (*str < '0' || *str > '9')
+		if (str[i] < '0' || str[i] > '9' || i > 10)
 			return (-1);
 		nbr *= 10;
-		dgt = *str++ - 48;
+		dgt = str[i++] - 48;
 		nbr += dgt;
 	}
 	return (nbr);

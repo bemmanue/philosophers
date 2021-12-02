@@ -6,7 +6,7 @@
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:45:47 by bemmanue          #+#    #+#             */
-/*   Updated: 2021/11/24 15:45:55 by bemmanue         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:40:16 by bemmanue         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	check_arguments(int argc, char **argv)
 {
-	long long	check;
+	uint64_t	check;
 	int			i;
 
 	if (argc < 5 || argc > 6)

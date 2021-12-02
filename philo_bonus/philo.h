@@ -45,14 +45,9 @@ typedef struct s_data
 	sem_t			*write;
 }					t_data;
 
-t_data		*init_data(int argc, char **argv);
-void		print_status(t_philo *philo, char *status);
-void		print_exit_status(t_data *data, int status);
-uint64_t	get_time(void);
-void		ft_usleep(int time);
-void		free_allocated_memory(t_data *data);
-void		exit_processes(t_data *data);
 int			check_arguments(int argc, char **argv);
+t_data		*init_data(int argc, char **argv);
+
 void		open_sems(t_data *data);
 void		close_sems(t_data *data);
 
@@ -62,7 +57,15 @@ void		eating(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		thinking(t_philo *philo);
 
-uint64_t	philo_atol(const char *str);
+void		print_status(t_philo *philo, char *status);
+void		print_exit_status(t_data *data, int status);
+
 void		free_allocated_memory(t_data *data);
+void		exit_processes(t_data *data);
+void		kill_processes(t_data *data, int died_philo, int amount);
+
+uint64_t	get_time(void);
+void		ft_usleep(int time);
+uint64_t	philo_atol(const char *str);
 
 #endif

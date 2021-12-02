@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -93,12 +93,12 @@ int	main(int argc, char **argv)
 {
 	if (check_arguments(argc, argv))
 	{
-		printf("Error: wrong arguments\n");
+		write(2, "\033[22;33mError: wrong arguments\n", 31);
 		return (1);
 	}
 	if (start_philosophers(argc, argv))
 	{
-		printf("Unexpected error\n");
+		write(2, "\033[22;33mError\n", 14);
 		return (1);
 	}
 	return (0);

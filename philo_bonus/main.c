@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bemmanue <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -68,8 +68,15 @@ void	start_processes(t_data *data)
 		pid = fork();
 		if (pid == 0)
 			routine(&data->philos[i]);
+		else if (pid < 0)
+		{
+			kill_processes(data, pid, i);
+			free_allocated_memory(data);
+			write(2, "\033[22;33mError\n", 14);
+			exit (0);
+		}
 		data->pids[i] = pid;
-		ft_usleep(2000);
+		ft_usleep(1000);
 		i++;
 	}
 }
@@ -96,12 +103,12 @@ int	main(int argc, char **argv)
 {
 	if (check_arguments(argc, argv))
 	{
-		write(2, "Error: wrong arguments\n", 23);
+		write(2, "\033[22;33mError: wrong arguments\n", 31);
 		return (1);
 	}
 	if (start_philosophers(argc, argv))
 	{
-		write(2, "Error\n", 6);
+		write(2, "\033[22;33mError\n", 14);
 		return (1);
 	}
 	return (0);
